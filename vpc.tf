@@ -18,3 +18,29 @@ module "vpc" {
     Project = "lab4"
   }
 }
+
+resource "aws_subnet" "rds-subnet-1" {
+  vpc_id            = module.vpc.vpc_id
+  cidr_block        = "10.0.5.0/24"  
+  availability_zone = "us-east-1a"   
+
+  tags = {
+    Name        = "rds-subnet-1"
+    Environment = var.environment
+    Owner       = "gabriela"
+    Project     = "lab4"
+  }
+}
+
+resource "aws_subnet" "rds-subnet-2" {
+  vpc_id            = module.vpc.vpc_id
+  cidr_block        = "10.0.6.0/24"  
+  availability_zone = "us-east-1b"   
+
+  tags = {
+    Name        = "rds-subnet-2"
+    Environment = var.environment
+    Owner       = "gabriela"
+    Project     = "lab4"
+  }
+}
