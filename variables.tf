@@ -1,3 +1,5 @@
+#SSH
+
 variable "access_key" {
     description = "access_key"
     type = string
@@ -14,6 +16,8 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+
+#VPC
 
 variable "vpc_name" {
   description = "Vpc lab4"
@@ -56,3 +60,17 @@ variable "environment" {
   type        = string
   default     = "test"
 }
+
+#SM
+/*
+variable "db_username" {
+  description = "Nombre de usuario de la base de datos"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Contraseña de la base de datos"
+  type        = string
+  sensitive   = true
+}
+*/

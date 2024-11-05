@@ -1,7 +1,7 @@
 resource "aws_db_instance" "postgres_db" {
   identifier              = "db-lab4"
   engine                 = "postgres"
-  engine_version         = "16.3"  # Cambia a la versión deseada de PostgreSQL
+  engine_version         = "15.8"  # version postgre
   instance_class         = "db.t4g.micro"
   allocated_storage       = 20
   db_name                = "db_laboratorio"
