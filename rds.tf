@@ -5,7 +5,7 @@ resource "aws_db_instance" "postgres_db" {
   instance_class         = "db.t4g.micro"
   allocated_storage       = 20
   db_name                = "db_laboratorio"
-  username               = "admin"
+  username               = "postgresadmin"
   password               = "123456789"
   /*username = var.db_username
   password = var.db_password*/ 

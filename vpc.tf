@@ -44,3 +44,29 @@ resource "aws_subnet" "rds-subnet-2" {
     Project     = "lab4"
   }
 }
+
+resource "aws_subnet" "cache-subnet-1" {
+  vpc_id            = module.vpc.vpc_id
+  cidr_block        = "10.0.7.0/24"  
+  availability_zone = "us-east-1a"   
+
+  tags = {
+    Name        = "cache-subnet-1"
+    Environment = var.environment
+    Owner       = "gabriela"
+    Project     = "lab4"
+  }
+}
+
+resource "aws_subnet" "cache-subnet-2" {
+  vpc_id            = module.vpc.vpc_id
+  cidr_block        = "10.0.8.0/24"  
+  availability_zone = "us-east-1b"   
+
+  tags = {
+    Name        = "cache-subnet-2"
+    Environment = var.environment
+    Owner       = "gabriela"
+    Project     = "lab4"
+  }
+}
