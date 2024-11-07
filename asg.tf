@@ -1,31 +1,23 @@
-/*resource "aws_instance" "example" {
-  ami           = "ami-12345678"
-  instance_type = "t2.micro"
-  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
-  # ...otras configuraciones de EC2...
-}
 
-*/
-
-resource "aws_iam_instance_profile" "ec2_instance_profile" {
-  name = "EC2InstanceProfile"
-  role = aws_iam_role.ec2_s3_access_role.name
-  #role de SSM
-}
 
 resource "aws_launch_template" "lt-lab4" {
-  image_id      = "ami-0866a3c8686eaeeba"  # Reemplaza con un AMI válido en tu región
+  image_id      = "ami-0059da08330c04d10"  # Reemplaza con un AMI válido en tu región
   instance_type = "t2.micro"
   
-   user_data = base64encode(<<-EOF
-    #!/bin/bash
-    apt-get update -y
-    apt-get install nginx -y
-    echo "<html><h1>Hola Mundo desde Nginx!</h1></html>" > /var/www/html/index.html
-    systemctl start nginx
-    systemctl enable nginx
-  EOF
-  )
+user_data = base64encode(<<-EOF
+  #!/bin/bash
+    postgresql-setup --initdb
+    sudo systemctl start postgresql
+    sudo systemctl enable postgresql
+    sudo systemctl status postgresql
+    #EFS
+    mkdir -p /var/www/html/efs
+    mount -t efs -o tls ${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/efs
+    echo "${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/efs efs _netdev,tls 0 0" >> /etc/fstab
+    systemctl restart httpd
+    EOF
+)
+
 
   # Perfil de instancia IAM que tiene permisos para S3 y SSM
   iam_instance_profile {
@@ -48,6 +40,11 @@ resource "aws_launch_template" "lt-lab4" {
   }
 }
 
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "EC2InstanceProfile"
+  role = aws_iam_role.ec2-access-role.name
+}
+
 resource "aws_autoscaling_group" "asg-lab4" {
   name = "asg-lab-4"
   desired_capacity     = 2
@@ -57,7 +54,16 @@ resource "aws_autoscaling_group" "asg-lab4" {
     id = aws_launch_template.lt-lab4.id
     version = "$Latest"
   }
-#falta activar el monitoring
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+    "GroupStandbyInstances",
+    "GroupTerminatingInstances",
+    "GroupTotalInstances"
+  ]
   
   vpc_zone_identifier = module.vpc.private_subnets
 

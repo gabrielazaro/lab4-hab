@@ -1,47 +1,23 @@
-# Memcached
-resource "aws_elasticache_cluster" "memcached-lab4" {
-  cluster_id           = "memcached-cluster"
-  engine               = "memcached"
-  node_type            = "cache.t2.micro" # Ajusta según tus necesidades
-  num_cache_nodes      = 1
-  parameter_group_name = "default.memcached1.6" # Asegúrate de que sea compatible con la versión
-
-  security_group_ids = [aws_security_group.cache-sg-lab4.id]
-  subnet_group_name  = aws_elasticache_subnet_group.cache_subnet_group.name
-
-  tags = {
-    Name        = "session-memcached-cache"
-    Environment = var.environment
-    Owner       = "gabriela"
-    Project     = "lab4"
-  }
-}
-
 #Redis
 
-
-resource "aws_elasticache_cluster" "redis-lab4" {
-  cluster_id           = "redis-lab4"
-  engine               = "redis"
-  node_type            = "cache.t2.micro" 
-  num_cache_nodes      = 1                
-  parameter_group_name = "default.redis7.cluster.on" 
-
-  security_group_ids = [aws_security_group.cache-sg-lab4.id]
-  subnet_group_name  = aws_elasticache_subnet_group.cache_subnet_group.name
-
-  tags = {
-    Name        = "redis-lab4"
-    Environment = var.environment
-    Owner       = "gabriela"
-    Project     = "lab4"
-  }
+resource "aws_elasticache_replication_group" "redis-lab4" {
+  automatic_failover_enabled  = true
+  preferred_cache_cluster_azs = module.vpc.azs
+  replication_group_id        = "redis-lab4"
+  description                 = "Redis replication group for lab4"
+  node_type                   = "cache.t4g.micro"
+  engine                      = "redis"
+  engine_version              = "7.1"
+  parameter_group_name        = "default.redis7"
+  port                        = 6379
+  num_node_groups             = 1
+  replicas_per_node_group     = 1
+  subnet_group_name           = aws_elasticache_subnet_group.cache_subnet_group.name
 }
-
 
 resource "aws_elasticache_subnet_group" "cache_subnet_group" {
   name       = "cache-subnet-group"
-  subnet_ids = [ aws_subnet.cache-subnet-1.id, aws_subnet.cache-subnet-2.id]
+  subnet_ids = [aws_subnet.cache-subnet-1.id, aws_subnet.cache-subnet-2.id]
 
   tags = {
     Name        = "cache-subnet-group"

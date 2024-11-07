@@ -61,16 +61,16 @@ variable "environment" {
   default     = "test"
 }
 
-#SM
-/*
-variable "db_username" {
-  description = "Nombre de usuario de la base de datos"
+variable "project" {
+  description = "Proyecto en curso"
   type        = string
+  default     = "lab4"
 }
 
-variable "db_password" {
-  description = "Contraseña de la base de datos"
-  type        = string
-  sensitive   = true
+variable "domain" {
+  description = "Dominio"
+  type = string
+  default = "aquinose" ## atencionnn
 }
-*/
+
+variable "rds_password" {}

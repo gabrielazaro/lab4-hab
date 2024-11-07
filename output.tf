@@ -17,3 +17,13 @@ output "nat_gateway_ids" {
   description = "IDs del NAT Gateway"
   value       = module.vpc.nat_ids
 }
+
+output "url" {
+  value = aws_s3_bucket.cms_images_bucket-lab4.bucket_domain_name
+  description = "URL"
+}
+
+output "redis_endpoint" {
+  description = "El endpoint de Redis en ElastiCache"
+  value       = aws_elasticache_replication_group.redis-lab4.primary_endpoint_address
+}

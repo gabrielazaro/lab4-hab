@@ -1,13 +1,25 @@
-/*resource "aws_secretsmanager_secret" "db_credentials" {
-  name        = "db_credentials_lab4"  
-  description = "Credenciales de la base de datos para la aplicación lab4"
+
+# Secret for AWS credentials
+resource "aws_secretsmanager_secret" "aws_credentials" {
+  name = "aws-credentials"
 }
 
-resource "aws_secretsmanager_secret_version" "db_credentials_version" {
-  secret_id     = aws_secretsmanager_secret.db_credentials.id
+resource "aws_secretsmanager_secret_version" "aws_credentials_version" {
+  secret_id = aws_secretsmanager_secret.aws_credentials.id
   secret_string = jsonencode({
-    username = var.db_username  
-    password = var.db_password  
+    access_key = var.access_key
+    secret_key = var.secret_key
   })
 }
-*/
+
+# Secret for RDS credentials
+resource "aws_secretsmanager_secret" "rds_password" {
+  name = "rds-password"
+}
+
+resource "aws_secretsmanager_secret_version" "rds_credentials_version" {
+  secret_id = aws_secretsmanager_secret.rds_password.id
+  secret_string = jsonencode({
+    password = var.rds_password
+  })
+}

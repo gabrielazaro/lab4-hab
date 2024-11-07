@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "cms_images_bucket" {
+resource "aws_s3_bucket" "cms_images_bucket-lab4" {
   bucket = "cms-images-lab4" 
   object_lock_enabled = true
 
@@ -10,8 +10,22 @@ resource "aws_s3_bucket" "cms_images_bucket" {
   }
 }
 
+resource "aws_s3_object" "image_1" {
+  bucket = aws_s3_bucket.cms_images_bucket-lab4.bucket
+  key    = "image1.jpg"
+  source = "aws-image.jpg"  # Ruta local de la imagen
+  acl    = "private"
+}
+
+resource "aws_s3_object" "image_2" {
+  bucket = aws_s3_bucket.cms_images_bucket-lab4.bucket
+  key    = "image2.jpg"
+  source = "banner-hackaboss.png"
+  acl    = "private"
+}
+
 resource "aws_s3_bucket_policy" "cms_images_bucket_policy" {
-  bucket = aws_s3_bucket.cms_images_bucket.id
+  bucket = aws_s3_bucket.cms_images_bucket-lab4.id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -24,10 +38,10 @@ resource "aws_s3_bucket_policy" "cms_images_bucket_policy" {
           "s3:PutObject",
           "s3:DeleteObject"
         ],
-        Resource = "${aws_s3_bucket.cms_images_bucket.arn}/*",
+        Resource = "${aws_s3_bucket.cms_images_bucket-lab4.arn}/*",
         Condition = {
           StringEquals = {
-            "aws:PrincipalArn" = aws_iam_role.ec2_s3_access_role.arn
+            "aws:PrincipalArn" = aws_iam_role.ec2-access-role.arn
           }
         }
       }
