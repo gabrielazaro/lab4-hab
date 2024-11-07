@@ -20,14 +20,6 @@ resource "aws_security_group" "ec2-sg-lab4" {
     protocol        = "tcp"
   }
 
-  # Allow incoming cache traffic (Redis)
-  ingress {
-    description     = "Cache Redis"
-    from_port       = 6379
-    to_port         = 6379
-    protocol        = "tcp"
-  }
-
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
@@ -79,9 +71,8 @@ resource "aws_security_group" "rds-sg-lab4" {
 
 resource "aws_security_group" "cache-sg-lab4" {
   name        = "cache-sg-lab4"
-  description = "Security group for cache allowing access from Auto Scaling group"
+  description = "Security group cache"
   vpc_id      = module.vpc.vpc_id
-  #no crea correctamente los puertos de entrada
   ingress {
     description = "Allow Redis traffic from Auto Scaling group"
     from_port   = 6379

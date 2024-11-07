@@ -1,10 +1,16 @@
+data "aws_cloudfront_cache_policy" "cache-disabled" {
+  name = "Managed-CachingDisabled"
+}
 
-/*module "cdn" {
+data "aws_cloudfront_origin_request_policy" "request-all-viewer" {
+  name = "Managed-AllViewer"
+}
+
+module "cdn" {
   source  = "terraform-aws-modules/cloudfront/aws"
   version = "~> 3.4.0"
 
-  aliases = ["${var.project}-${var.environment}.${var.domain}"]
-
+  aliases             = ["${var.project}-${var.environment}.${var.domain}"]
   comment             = "CloudFront ${var.project}-${var.environment}"
   enabled             = true
   is_ipv6_enabled     = true
@@ -17,7 +23,7 @@
 
   origin = {
     alb = {
-      domain_name = aws_lb.alb_internal.dns_name 
+      domain_name = aws_lb.alb-lab4.dns_name
       custom_origin_config = {
         http_port              = 80
         https_port             = 443
@@ -38,34 +44,9 @@
     cached_methods           = ["GET", "HEAD", "OPTIONS"]
   }
 
-  ordered_cache_behavior = [
-    {
-      path_pattern             = "/wp-content/*"
-      target_origin_id         = "alb"
-      viewer_protocol_policy   = "redirect-to-https"
-      origin_request_policy_id = data.aws_cloudfront_origin_request_policy.request-all-viewer.id
-      cache_policy_id          = data.aws_cloudfront_cache_policy.cache-optimized.id
-      allowed_methods          = ["GET", "HEAD", "OPTIONS"]
-      cached_methods           = ["GET", "HEAD", "OPTIONS"]
-      compress                 = true
-      use_forwarded_values     = false
-    },
-    {
-      path_pattern             = "/wp-includes/*"
-      target_origin_id         = "alb"
-      viewer_protocol_policy   = "redirect-to-https"
-      origin_request_policy_id = data.aws_cloudfront_origin_request_policy.request-all-viewer.id
-      cache_policy_id          = data.aws_cloudfront_cache_policy.cache-optimized.id
-      allowed_methods          = ["GET", "HEAD", "OPTIONS"]
-      cached_methods           = ["GET", "HEAD", "OPTIONS"]
-      compress                 = true
-      use_forwarded_values     = false
-    }
-  ]
   viewer_certificate = {
-    acm_certificate_arn      = module.acm_cloudfront.acm_certificate_arn
+    acm_certificate_arn      = aws_acm_certificate.cert.arn
     minimum_protocol_version = "TLSv1.2_2021"
     ssl_support_method       = "sni-only"
+  }
 }
-}
-*/

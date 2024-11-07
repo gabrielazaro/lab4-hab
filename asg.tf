@@ -7,13 +7,16 @@ resource "aws_launch_template" "lt-lab4" {
 user_data = base64encode(<<-EOF
   #!/bin/bash
     postgresql-setup --initdb
-    sudo systemctl start postgresql
-    sudo systemctl enable postgresql
-    sudo systemctl status postgresql
+    systemctl start postgresql
+    systemctl enable postgresql
+    systemctl status postgresql
     #EFS
     mkdir -p /var/www/html/efs
     mount -t efs -o tls ${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/efs
     echo "${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/efs efs _netdev,tls 0 0" >> /etc/fstab
+    echo "<html><h1>Todo está ok</h1></html>" > /var/www/html/salud
+    chown apache:apache /var/www/html/salud
+    chmod 644 /var/www/html/salud
     systemctl restart httpd
     EOF
 )
@@ -68,7 +71,7 @@ resource "aws_autoscaling_group" "asg-lab4" {
   vpc_zone_identifier = module.vpc.private_subnets
 
 
-  target_group_arns = [aws_lb_target_group.internal_alb_target_group.arn]
+  target_group_arns = [aws_lb_target_group.alb-target-group.arn]
 
   health_check_type         = "EC2"
   health_check_grace_period = 300

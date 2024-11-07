@@ -70,7 +70,13 @@ variable "project" {
 variable "domain" {
   description = "Dominio"
   type = string
-  default = "aquinose" ## atencionnn
+  default = "masterinterraform.com"
+}
+
+variable "subdomain" {
+  default = "www"
+ description = "Subdominio"
+  type  = string
 }
 
 variable "rds_password" {}
