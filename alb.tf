@@ -46,6 +46,17 @@ resource "aws_lb_listener" "http_listener" {
   }
 }
 
+resource "aws_lb_listener" "https_listener" {
+  load_balancer_arn = aws_lb.alb-lab4.arn 
+  port              = 443
+  protocol          = "HTTP"
+
+  default_action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.alb-target-group.arn
+  }
+}
+
 
 resource "aws_security_group" "alb-sg-lab4" {
   name        = "alb-sg-lab4"
