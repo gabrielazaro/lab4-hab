@@ -13,6 +13,8 @@ resource "aws_elasticache_replication_group" "redis-lab4" {
   num_node_groups             = 1
   replicas_per_node_group     = 1
   subnet_group_name           = aws_elasticache_subnet_group.cache_subnet_group.name
+  at_rest_encryption_enabled = true
+  transit_encryption_enabled = true
 }
 
 resource "aws_elasticache_subnet_group" "cache_subnet_group" {
@@ -24,5 +26,21 @@ resource "aws_elasticache_subnet_group" "cache_subnet_group" {
     Environment = var.environment
     Owner       = "gabriela"
     Project     = "lab4"
+  }
+}
+
+# Alarma para uso de memoria de Redis
+resource "aws_cloudwatch_metric_alarm" "redis_memory" {
+  alarm_name          = "redis-memory-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "DatabaseMemoryUsagePercentage"
+  namespace           = "AWS/ElastiCache"
+  period             = "300"
+  statistic          = "Average"
+  threshold          = "80"
+  
+  dimensions = {
+    CacheClusterId = aws_elasticache_replication_group.redis-lab4.id
   }
 }

@@ -27,3 +27,8 @@ output "redis_endpoint" {
   description = "El endpoint de Redis en ElastiCache"
   value       = aws_elasticache_replication_group.redis-lab4.primary_endpoint_address
 }
+
+output "alb_dns_name" {
+  description = "DNS público del Application Load Balancer"
+  value       = aws_lb.alb-lab4.dns_name
+}

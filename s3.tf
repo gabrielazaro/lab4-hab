@@ -36,7 +36,8 @@ resource "aws_s3_bucket_policy" "cms_images_bucket_policy" {
         Action = [
           "s3:GetObject",
           "s3:PutObject",
-          "s3:DeleteObject"
+          "s3:DeleteObject",
+          "s3:PutObject"
         ],
         Resource = "${aws_s3_bucket.cms_images_bucket-lab4.arn}/*",
         Condition = {
@@ -47,4 +48,9 @@ resource "aws_s3_bucket_policy" "cms_images_bucket_policy" {
       }
     ]
   })
+}
+
+resource "aws_s3_bucket_metric" "cms_bucket_metrics" {
+  bucket = aws_s3_bucket.cms_images_bucket-lab4.id
+  name   = "EntireBucket"
 }

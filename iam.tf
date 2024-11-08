@@ -36,6 +36,7 @@ resource "aws_iam_policy" "ec2_s3_policy" {
   })
 }
 
+/* Me hubiese encantado aplicarlo pero no hubo tiempo.
 resource "aws_iam_policy" "secrets_access_policy" {
   name        = "EC2SecretsAccessPolicy"
   description = "Policy to allow EC2 instances to access specific secrets in Secrets Manager"
@@ -53,6 +54,26 @@ resource "aws_iam_policy" "secrets_access_policy" {
     ]
   })
 }
+*/ 
+resource "aws_iam_policy" "efs_access" {
+  name        = "WordPress-EFS-Access"
+  description = "Permite acceso a EFS para almacenamiento compartido"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:ClientRootAccess"
+        ]
+        Resource = aws_efs_file_system.efs-lab4.arn
+      }
+    ]
+  })
+}
 
 resource "aws_iam_role_policy_attachment" "ec2_s3_policy_attachment" {
   role       = aws_iam_role.ec2-access-role.name
@@ -64,7 +85,11 @@ resource "aws_iam_role_policy_attachment" "ssm_access_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-resource "aws_iam_role_policy_attachment" "ec2_secrets_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "efs_policy_attach" {
+  policy_arn = aws_iam_policy.efs_access.arn
   role       = aws_iam_role.ec2-access-role.name
-  policy_arn = aws_iam_policy.secrets_access_policy.arn
+}
+resource "aws_iam_role_policy_attachment" "cloudwatch_policy_attach" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = aws_iam_role.ec2-access-role.name
 }

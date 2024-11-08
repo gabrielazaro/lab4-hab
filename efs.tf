@@ -7,18 +7,13 @@ resource "aws_efs_file_system" "efs-lab4" {
     Name = "lab4-efs"
     Environment = var.environment
     Owner = "gabriela"
-    Project = "lab4"
+    Project = var.project
   }
 }
 
-resource "aws_efs_mount_target" "mt_az1" {
-  file_system_id = aws_efs_file_system.efs-lab4.id
-  subnet_id      = module.vpc.public_subnets[0]   # Primer subnet (AZ 1)
-  security_groups = [aws_security_group.efs-sg-lab4.id]
-}
-
-resource "aws_efs_mount_target" "mt_az2" {
-  file_system_id = aws_efs_file_system.efs-lab4.id
-  subnet_id      = module.vpc.public_subnets[1]   # Segundo subnet (AZ 2)
+resource "aws_efs_mount_target" "efs_mount_targets" {
+  count           = length(module.vpc.private_subnets)
+  file_system_id  = aws_efs_file_system.efs-lab4.id
+  subnet_id       = module.vpc.private_subnets[count.index]
   security_groups = [aws_security_group.efs-sg-lab4.id]
 }

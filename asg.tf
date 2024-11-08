@@ -1,26 +1,25 @@
-
-
 resource "aws_launch_template" "lt-lab4" {
   image_id      = "ami-0059da08330c04d10"  # Reemplaza con un AMI válido en tu región
   instance_type = "t2.micro"
   
-user_data = base64encode(<<-EOF
-  #!/bin/bash
-    postgresql-setup --initdb
-    systemctl start postgresql
-    systemctl enable postgresql
-    systemctl status postgresql
-    #EFS
-    mkdir -p /var/www/html/efs
-    mount -t efs -o tls ${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/efs
-    echo "${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/efs efs _netdev,tls 0 0" >> /etc/fstab
-    echo "<html><h1>Todo está ok</h1></html>" > /var/www/html/salud
-    chown apache:apache /var/www/html/salud
-    chmod 644 /var/www/html/salud
-    systemctl restart httpd
-    EOF
-)
+ user_data = base64encode(<<-EOF
+    #!/bin/bash -xe
 
+    sed -i "s/define('DB_HOST',.*/define('DB_HOST', '${aws_db_instance.rds-lab4.address}');/" /var/www/html/wp-config.php
+
+    # Montar EFS
+    mkdir -p /var/www/html/wp-content/uploads
+    mount -t efs -o tls ${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/wp-content/uploads
+    echo "${aws_efs_file_system.efs-lab4.id}:/ /var/www/html/wp-content/uploads efs _netdev,tls 0 0" >> /etc/fstab
+
+    # Configurar Redis
+    echo "define('WP_REDIS_HOST', '${aws_elasticache_replication_group.redis-lab4.primary_endpoint_address}');" >> /var/www/html/wp-config.php
+    echo "define('WP_REDIS_PORT', '6379');" >> /var/www/html/wp-config.php
+
+    # Reiniciar servicios
+    systemctl restart httpd
+  EOF
+  )
 
   # Perfil de instancia IAM que tiene permisos para S3 y SSM
   iam_instance_profile {
