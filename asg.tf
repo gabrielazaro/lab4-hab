@@ -1,5 +1,5 @@
 resource "aws_launch_template" "lt-lab4" {
-  image_id      = "ami-0814e461d7d908d17"  # Reemplaza con un AMI válido en tu región
+  image_id      = "ami-01da4dbea3d95a374"  # Reemplaza con un AMI válido en tu región
   instance_type = "t2.micro"
   
  user_data = base64encode(<<-EOF
@@ -15,7 +15,8 @@ resource "aws_launch_template" "lt-lab4" {
     # Configurar Redis
     echo "define('WP_REDIS_HOST', '${aws_elasticache_replication_group.redis-lab4.primary_endpoint_address}');" >> /var/www/html/wp-config.php
     echo "define('WP_REDIS_PORT', '6379');" >> /var/www/html/wp-config.php
-
+    chown -R apache:apache /var/www/html/
+    chmod -R 755 /var/www/html/
     # Reiniciar servicios
     systemctl restart httpd
   EOF
