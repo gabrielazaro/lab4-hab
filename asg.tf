@@ -1,5 +1,5 @@
 resource "aws_launch_template" "lt-lab4" {
-  image_id      = "ami-0059da08330c04d10"  # Reemplaza con un AMI válido en tu región
+  image_id      = "ami-0814e461d7d908d17"  # Reemplaza con un AMI válido en tu región
   instance_type = "t2.micro"
   
  user_data = base64encode(<<-EOF
